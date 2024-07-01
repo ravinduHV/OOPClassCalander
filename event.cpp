@@ -4,14 +4,16 @@
 
 using namespace std;
 
-void event::set_starting_time(string time)
+
+
+void event::set_starting_time(time_t* time)
 {
-    starting_time = time;
+    starting_time = *time;
 }
 
-void event::set_ending_time(string time)
+void event::set_ending_time(time_t* time)
 {
-    ending_time = time;
+    ending_time = *time;
 }
 
 void event::set_event_name(string name)
@@ -30,14 +32,14 @@ void event::set_event_ID(int id)
 }
 
 
-string event::get_starting_time()
+time_t* event::get_starting_time()
 {
-    return starting_time;
+    return &starting_time;
 }
 
-string event::get_ending_time()
+time_t* event::get_ending_time()
 {
-    return ending_time;
+    return &ending_time;
 }
 
 string event::get_event_name()
@@ -60,6 +62,6 @@ void event::show_meeting_info()
     cout << "Event ID: " << event_id << endl;
     cout << "Event Name: " << event_name << endl;
     cout << "Event Description: " << event_description << endl;
-    cout << "Starting Time: " << starting_time << endl;
-    cout << "Ending Time: " << ending_time << endl;
+    cout << "Starting Time: " << ctime(&starting_time);
+    cout << "Ending Time: " << ctime(&ending_time);
 }

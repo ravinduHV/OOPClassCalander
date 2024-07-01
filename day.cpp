@@ -4,11 +4,12 @@
 
 using namespace std;
 
+
 void day::show_events()
 {
-    cout << "Day: " << day_ << endl;
+    cout << "Date: " << localTime->tm_mon<<"/" << localTime->tm_mday << endl;
     cout << "Is off day: " << is_offDay << endl;
-    cout << "Is weekend: " << is_weekEnd << endl<< endl;
+    cout << "Is weekend: " << is_weekEnd() << endl<< endl;
     cout << "Events: " << endl;
     for (int i = 0; i < events.size(); i++)
     {
@@ -18,9 +19,9 @@ void day::show_events()
 }
 
 void day::add_event(event _event)
-{
-    _event.set_event_ID(next_id);   
-    events.push_back(_event);
+{ 
+    _event.set_event_ID(next_id); 
+    events.push_back(_event);  
     next_id++;
 }
 
@@ -44,3 +45,19 @@ void day::shift_event(int id, string starting_time, string ending_time)
 {
 }
 
+bool day::is_free(string starting_time, string ending_time)
+{
+    return false;
+}
+
+bool day::is_free_day()
+{
+    return !is_offDay;
+}
+
+bool day::is_weekEnd()
+{
+    if(localTime->tm_wday == 0 || localTime->tm_wday == 6)
+        return true;
+    return false;
+}
