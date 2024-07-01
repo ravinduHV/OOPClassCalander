@@ -1,4 +1,8 @@
+#ifndef EVENT_H
+#define EVENT_H
+
 #include <string>
+using namespace std;
 
 class event
 {
@@ -10,14 +14,17 @@ class event
         int event_id;
 
     public:
-        event(int ID): event_id(ID) {}
         void set_starting_time(string time);
         void set_ending_time(string time);
         void set_event_name(string name);
         void set_event_description(string description);
+        void set_event_ID(int id);
         string get_starting_time();
         string get_ending_time();
         string get_event_name();
         string get_event_description();
-        int get_event_id();  
-}
+        int get_event_id();
+        void show_meeting_info();  
+};
+
+#endif
