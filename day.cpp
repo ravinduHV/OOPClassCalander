@@ -7,9 +7,7 @@ using namespace std;
 
 void day::show_events()
 {
-    char buffer[10];
-    strftime(buffer, 10, "%b", localTime);
-    cout << "Date: " << localTime->tm_year+1900 <<" "<< localTime->tm_mon << " "<< buffer << endl;
+    cout << "Date: " << date.year <<" "<< date.month << " "<< date.day << endl;
     cout << "Is off day: " << is_offDay << endl;
     cout << "Is weekend: " << is_weekEnd() << endl<< endl;
     cout << "Events: " << endl;
@@ -43,8 +41,18 @@ void day::edit_event(int id)
 
 }
 
-void day::shift_event(int id, string starting_time, string ending_time)
-{
+void day::shift_event(int id, int starting_time, int ending_time)
+{   datetime new_start_time(0,0,0,starting_time,0);
+    datetime new_ending_time(0,0,0,ending_time,0);
+
+	for (int i = 0; i < events.size(); i++)
+    {
+        if (events[i].get_event_id() == id)
+        {
+            events[i].set_starting_time(new_start_time); 
+            events[i].set_ending_time(new_ending_time);
+        }
+    }
 }
 
 bool day::is_free(string starting_time, string ending_time)
@@ -59,7 +67,19 @@ bool day::is_off_day()
 
 bool day::is_weekEnd()
 {
-    if(localTime->tm_wday == 0 || localTime->tm_wday == 6)
+    struct tm * timeinfo;
+    struct tm  timeinfo2;
+    time_t rawtime;
+
+    timeinfo2.tm_year = date.year - 1900;
+    timeinfo2.tm_mon = date.month - 1;
+    timeinfo2.tm_mday = date.day;
+    timeinfo2.tm_hour = 0;
+    timeinfo2.tm_min = 0;
+    timeinfo2.tm_sec = 0;
+    rawtime = mktime(&timeinfo2);
+    timeinfo = localtime(&rawtime); 
+    if(timeinfo->tm_wday == 0 || timeinfo->tm_wday == 6)
         return true;
     return false;
 }
@@ -76,7 +96,7 @@ int day::no_ofEvents()
     return events.size();
 }
 
-time_t* day::get_date()
+datetime* day::get_date()
 {
     return &date;
 }

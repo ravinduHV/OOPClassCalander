@@ -2,27 +2,28 @@
 #define EVENT_H
 
 #include <string>
-#include <ctime>
+#include "datetime.h"
 
 using namespace std;
+
 
 class event
 {
     private:
-        time_t starting_time;
-        time_t ending_time;
+        datetime starting_time;
+        datetime ending_time;
         string event_name;
         string event_description; 
         int event_id;
 
     public:
-        void set_starting_time(time_t* time);
-        void set_ending_time(time_t* time);
+        void set_starting_time(datetime time);
+        void set_ending_time(datetime time);
         void set_event_name(string name);
         void set_event_description(string description);
         void set_event_ID(int id);
-        time_t* get_starting_time();
-        time_t* get_ending_time();
+        datetime* get_starting_time();
+        datetime* get_ending_time();
         string get_event_name();
         string get_event_description();
         int get_event_id();

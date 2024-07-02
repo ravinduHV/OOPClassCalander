@@ -3,22 +3,20 @@
 
 #include <vector>
 #include "day.h"
-#include <ctime>
 #include <iostream>
+#include "datetime.h"
 
 using namespace std;
 
 class month
 {
     private:
-        time_t Month;
+        datetime month_;
         vector<day> days;
         void add_days();
-        struct tm *localTime = localtime(&Month);
-        int days_in_month(int yr, int mon);
 
     public:
-        month(time_t* _month): Month(*_month) {add_days();}
+        month(datetime _month): month_(_month) {add_days();}
         void show_monthlySchedule();
         
 };

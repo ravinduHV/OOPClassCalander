@@ -4,20 +4,15 @@
 #include "day.h"
 #include "event.h"
 #include <ctime>
+#include "datetime.h"
 
 using namespace std;
 
 int main()
 {
-    ///*
-    struct tm time_in ;
-    time_in.tm_year = 2024 - 1900; // Number of years since 1900
-    time_in.tm_mon = 7-1; // 0-11
-    time_in.tm_mday = 7; // 1-31
-    time_t time_temp = mktime(&time_in);
-
-    month july(&time_temp);
-    july.show_monthlySchedule();
+    datetime time_temp(2024, 7, 1, 0, 0);
+    month july(time_temp);
+    //july.show_monthlySchedule();
     //*/
 
     /*
