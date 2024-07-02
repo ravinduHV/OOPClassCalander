@@ -7,7 +7,9 @@ using namespace std;
 
 void day::show_events()
 {
-    cout << "Date: " << localTime->tm_mon<<"/" << localTime->tm_mday << endl;
+    char buffer[10];
+    strftime(buffer, 10, "%b", localTime);
+    cout << "Date: " << localTime->tm_year+1900 <<" "<< localTime->tm_mon << " "<< buffer << endl;
     cout << "Is off day: " << is_offDay << endl;
     cout << "Is weekend: " << is_weekEnd() << endl<< endl;
     cout << "Events: " << endl;
@@ -50,7 +52,7 @@ bool day::is_free(string starting_time, string ending_time)
     return false;
 }
 
-bool day::is_free_day()
+bool day::is_off_day()
 {
     return !is_offDay;
 }
@@ -60,4 +62,21 @@ bool day::is_weekEnd()
     if(localTime->tm_wday == 0 || localTime->tm_wday == 6)
         return true;
     return false;
+}
+
+void day::set_offDay()
+{
+    is_offDay = true;
+    events.clear();
+    next_id = 0;
+}
+
+int day::no_ofEvents()
+{
+    return events.size();
+}
+
+time_t* day::get_date()
+{
+    return &date;
 }

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include "month.h"
 #include "day.h"
 #include "event.h"
 #include <ctime>
@@ -8,6 +9,18 @@ using namespace std;
 
 int main()
 {
+    ///*
+    struct tm time_in ;
+    time_in.tm_year = 2024 - 1900; // Number of years since 1900
+    time_in.tm_mon = 7-1; // 0-11
+    time_in.tm_mday = 7; // 1-31
+    time_t time_temp = mktime(&time_in);
+
+    month july(&time_temp);
+    july.show_monthlySchedule();
+    //*/
+
+    /*
     struct tm datetime_1;
     struct tm datetime_2, datetime;
     time_t timestamp, timestamp_1,timestamp_2;
@@ -43,4 +56,5 @@ int main()
     day d1(&timestamp, false);
     d1.add_event(e1);
     d1.show_events();
+    */
 }

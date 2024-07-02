@@ -5,6 +5,7 @@ using namespace std;
 int main() {
     //get time now
     time_t timestamp = time(NULL);
+    cout << timestamp << endl;
     //convert to local time
     struct tm *localTime = localtime(&timestamp);
     //print the local time

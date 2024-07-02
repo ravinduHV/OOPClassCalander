@@ -4,6 +4,7 @@
 #include <vector>
 #include "event.h"
 #include <ctime>
+#include <iostream>
 
 using namespace std;
 
@@ -24,8 +25,11 @@ public:
     void edit_event(int id);
     void shift_event(int id, string starting_time, string ending_time); 
     bool is_free(string starting_time, string ending_time);
-    bool is_free_day();
+    bool is_off_day();
     bool is_weekEnd();
+    void set_offDay();
+    int no_ofEvents();
+    time_t* get_date();
 };
 
 #endif
