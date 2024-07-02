@@ -25,13 +25,8 @@ int menu_1(){
     {
         cin >> choice;
         if (choice < 1 || choice > 5)
-        {
             cout << "Invalid choice, please try again :";
-        }
         else
-        {
             return choice;
-        }
     }
-
 }
