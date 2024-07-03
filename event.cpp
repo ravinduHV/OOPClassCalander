@@ -4,16 +4,28 @@
 
 using namespace std;
 
-
-
-void event::set_starting_time(datetime time)
+event::event(time_t _starting_time, time_t _ending_time, string _event_name, string _event_description, int _event_id)
 {
-    starting_time = time;
+    starting_time = _starting_time;
+    ending_time = _ending_time;
+    event_name = _event_name;
+    event_description = _event_description;
+    event_id = _event_id;
+
+    starting_time_tm = *localtime(&starting_time);
+    ending_time_tm = *localtime(&ending_time);
 }
 
-void event::set_ending_time(datetime time)
+void event::set_starting_time(time_t time)
+{
+    starting_time = time;
+    starting_time_tm = *localtime(&starting_time);
+}
+
+void event::set_ending_time(time_t time)
 {
     ending_time = time;
+    ending_time_tm = *localtime(&ending_time);
 }
 
 void event::set_event_name(string name)
@@ -32,12 +44,12 @@ void event::set_event_ID(int id)
 }
 
 
-datetime* event::get_starting_time()
+time_t* event::get_starting_time()
 {
     return &starting_time;
 }
 
-datetime* event::get_ending_time()
+time_t* event::get_ending_time()
 {
     return &ending_time;
 }
@@ -62,6 +74,6 @@ void event::show_meeting_info()
     cout << "Event ID: " << event_id << endl;
     cout << "Event Name: " << event_name << endl;
     cout << "Event Description: " << event_description << endl;
-    cout << "Starting Time: " << starting_time.show_date() << endl;
-    cout << "Ending Time: " << ending_time.show_date() << endl;
+    cout << "Starting Time: " << asctime(&starting_time_tm);
+    cout << "Ending Time: " << asctime(&ending_time_tm);
 }

@@ -1,31 +1,27 @@
 #include "month.h"
-#include "datetime.h"
+#include <ctime>
 
-void month::add_days()
+void month::add_days(time_t day_dt, bool off)
 {
-    cout << "adding days :" <<month_.year<< " " << month_.month<< endl;
-    cout << "adding days :" <<month_.year << " " << month_.month<<" " << month_.day << endl;
-
-    for (int i = 1; i <= month_.days_in_month(); i++){
-        datetime dateTemp(month_.year, month_.month, i, 0, 0);
-        day temp(dateTemp, false);
-        days.push_back(temp);
-    }
-    for (int i = 0; i < days.size(); i++){
-        cout << days[i].get_date()->show_date() << endl;
-    }
-
-    cout << "adding days :" <<month_.year << " " << month_.month<<" " << month_.day << endl;
+    day temp(day_dt, off);
+    days.push_back(temp);
 }
 
+month::month(time_t _month)
+{
+    month_ = _month;
+    month_tm = *localtime(&month_);
+    cout << "Month created: " << asctime(&month_tm);
+}
 
 void month::show_monthlySchedule()
 {
-    cout << "Schedule for month of "<<month_.month << " " << month_.year<< ":\n";
+    char title[50];
+    strftime(title, 50, "Schedule for month of %B %Y", &month_tm);
+    cout << title << endl;
 
     for (auto i = days.begin(); i != days.end(); ++i)
-    { 
-        cout << month_.day <<" "<< month_.month << " " << month_.year << endl;
+    {
         i->show_events();
     }
 }

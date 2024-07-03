@@ -4,7 +4,7 @@
 #include "day.h"
 #include "event.h"
 #include <ctime>
-#include "datetime.h"
+
 
 using namespace std;
 
@@ -12,8 +12,14 @@ int menu_1();
 
 int main()
 {
-    menu_1();
     
+    tm time_1;
+    time_t time1;
+    time_1 = {0, 0, 0, 1, 7-1, 2024 - 1900};
+    time1 = mktime(&time_1);
+    month month1(time1);
+    month1.add_days(time1, false);
+    month1.show_monthlySchedule();
 }
 
 
