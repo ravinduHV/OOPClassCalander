@@ -4,17 +4,20 @@
 
 using namespace std;
 
-event::event(time_t _starting_time, time_t _ending_time, string _event_name, string _event_description, int _event_id)
+event::event(time_t _starting_time, time_t _ending_time, string _event_name, string _event_description, int _event_id, int _repeat_option, int _repeat_count)
 {
     starting_time = _starting_time;
     ending_time = _ending_time;
     event_name = _event_name;
     event_description = _event_description;
     event_id = _event_id;
+    repeat_option = _repeat_option;
+    repeat_count = _repeat_count;
 
     starting_time_tm = *localtime(&starting_time);
     ending_time_tm = *localtime(&ending_time);
 }
+
 
 void event::set_starting_time(time_t time)
 {

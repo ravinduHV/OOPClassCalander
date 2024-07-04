@@ -25,7 +25,7 @@ public:
     void remove_event(int id);
     void edit_event(int id);
     void shift_event(int id, time_t starting_time, time_t ending_time); 
-    bool is_free(string starting_time, string ending_time);
+    bool is_free(time_t starting_time, time_t ending_time);
     bool is_off_day();
     bool is_weekEnd();
     void set_offDay();

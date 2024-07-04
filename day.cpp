@@ -14,12 +14,12 @@ day::day(time_t _date, bool is_offDay_)
 
 void day::show_events()
 {
-    char tmp[30];
+    /*char tmp[30];
     strftime(tmp, 30, "%d %B (%a)", &date_tm);
     cout << "Date: "<< tmp << endl;
     cout << "Is off day: " << is_offDay << endl;
     cout << "Is weekend: " << is_weekEnd() << endl<< endl;
-    cout << "Events: " << endl;
+    cout << "Events: " << endl;*/
     for (int i = 0; i < events.size(); i++)
     {
         events[i].show_meeting_info();
@@ -67,9 +67,9 @@ void day::shift_event(int id, time_t starting_time, time_t ending_time)
     }*/
 }
 
-bool day::is_free(string starting_time, string ending_time)
+bool day::is_free(time_t starting_time, time_t ending_time)
 {
-    return false;
+    return true;
 }
 
 bool day::is_off_day()

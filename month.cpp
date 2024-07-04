@@ -26,6 +26,29 @@ void month::show_monthlySchedule()
     }
 }
 
+void month::show_weeklySchedule(int week_no)
+{
+    cout << "Week " << week_no << " Schedule: " << endl;
+}
 
+void month::show_dailySchedule(int date)
+{
+    cout << "Daily Schedule for " << date << " " << month_tm.tm_mon << " " << month_tm.tm_year << endl;
+}
 
+time_t month::get_month()
+{
+    return month_;
+}
 
+day *month::get_day(time_t date)
+{
+    for (auto i = days.begin(); i != days.end(); ++i)
+    {
+        if (*i->get_date() == date)
+        {
+            return &(*i);
+        }
+    }
+    return nullptr;
+}

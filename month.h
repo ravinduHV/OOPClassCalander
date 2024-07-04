@@ -19,7 +19,10 @@ class month
         month(time_t _month);
         void add_days(time_t day_dt, bool off);
         void show_monthlySchedule();
-        
+        void show_weeklySchedule(int week_no);
+        void show_dailySchedule(int date);
+        time_t get_month();
+        day * get_day(time_t date);
 };
 
 #endif
