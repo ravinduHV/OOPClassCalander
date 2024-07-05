@@ -74,9 +74,9 @@ int event::get_event_id()
 
 void event::show_meeting_info()
 {
-    cout << "Event ID: " << event_id << endl;
-    cout << "Event Name: " << event_name << endl;
-    cout << "Event Description: " << event_description << endl;
-    cout << "Starting Time: " << asctime(&starting_time_tm);
-    cout << "Ending Time: " << asctime(&ending_time_tm);
+    char start[30], end[30];
+    // plz refer : https://www.w3schools.com/cpp/ref_ctime_strftime.asp
+    strftime(start, 30, "%H%M", &starting_time_tm);
+    strftime(end, 30, " - %H%MH ", &ending_time_tm);
+    cout << start << end << event_name << endl;
 }

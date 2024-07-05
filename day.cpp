@@ -14,16 +14,16 @@ day::day(time_t _date, bool is_offDay_)
 
 void day::show_events()
 {
-    /*char tmp[30];
-    strftime(tmp, 30, "%d %B (%a)", &date_tm);
-    cout << "Date: "<< tmp << endl;
-    cout << "Is off day: " << is_offDay << endl;
-    cout << "Is weekend: " << is_weekEnd() << endl<< endl;
-    cout << "Events: " << endl;*/
-    for (int i = 0; i < events.size(); i++)
+    if (events.size() != 0)
     {
-        events[i].show_meeting_info();
-        cout << endl;
+        char buffer[80];
+        strftime(buffer, 20, "%d %b (%a)", &date_tm);
+        cout << buffer << endl;
+        for (auto i = events.begin(); i != events.end(); i++)
+        {
+            cout <<"\t";
+            i->show_meeting_info();
+        }
     }
 }
 
@@ -99,4 +99,17 @@ int day::no_ofEvents()
 time_t* day::get_date()
 {
     return &date;
+}
+
+
+event* day::at_this_time(time_t time)
+{
+    for (auto i = events.begin(); i != events.end(); i++)
+    {
+        if (time >= *i->get_starting_time() && time < *i->get_ending_time())
+        {
+            return &(*i);
+        }
+    }
+    return nullptr;
 }

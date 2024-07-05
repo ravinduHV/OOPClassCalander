@@ -31,6 +31,7 @@ public:
     void set_offDay();
     int no_ofEvents();
     time_t* get_date();
+    event* at_this_time(time_t time);
 };
 
 #endif

@@ -103,15 +103,18 @@ int menu_3() {
 
     time_t mon = currentMonth->get_month();
     temp_tm = *localtime(&mon);
+    
     char tmp[15];
     strftime(tmp, 15, "(%Y %B ?) :", &temp_tm);
      
     day * currentDay; 
 	int repeatChoice, repeatCount=1, date, Starting_Time_h, Starting_Time_m, Ending_Time_h, Ending_Time_m;
-	string Title, Description;
+	
+    string Title, Description;
 
     cout<<"Add new Event/Meeting\nTitle:";
-    cin>>Title;
+    cin.ignore();   
+    getline(cin, Title);
 
     cout<<"Date "<<tmp;
     cin>>date;
@@ -144,8 +147,6 @@ int menu_3() {
         cin>>Ending_Time_h>>Ending_Time_m;
         e = {0, Ending_Time_m, Ending_Time_h, date, temp_tm.tm_mon, temp_tm.tm_year};
         e_ = mktime(&e);
-        cout << s_ << " " << e_ << " " << now << endl;
-        cout << bool(s_ < e_) <<" "<< bool(s_ < now) <<" "<< bool(e_ < now) <<" "<< bool(Starting_Time_m % 30 != 0) <<" "<< bool(Ending_Time_m % 30 != 0) << endl;
         if (e_ < s_ || s_ < now || e_ <  now || Starting_Time_m % 30 != 0|| Ending_Time_m % 30 != 0)
             cout<<"Invalid time slot, please try again\n";
         else{
@@ -157,7 +158,8 @@ int menu_3() {
     }
 
     cout<<"Description:";
-    cin>>Description;
+    cin.ignore();
+    getline(cin, Description);
     
     cout<<"Repeating Options\n1.Repeat Daily\n2.Repeat weekly\n3.Non-Repeating\n\tEnter your choice: ";
     cin>>repeatChoice;
@@ -173,7 +175,7 @@ int menu_3() {
         cin>>repeatCount;
         while(true) {
             int mx = maxDays(temp_tm.tm_mon+1, temp_tm.tm_year+1900);
-            if (repeatCount <= 1 || (repeatChoice == 2 && repeatCount > ((mx-date)/7+1)) || (repeatChoice == 1 && repeatCount > (mx-date+1))) {
+            if (repeatCount <= 1 || (repeatChoice == 2 && repeatCount > ((mx-date)/repeatMultiple[1] + 1)) || (repeatChoice == 1 && repeatCount > (mx - date + repeatMultiple[0]))) {
                 cout << "Invalid choice, please try again :";
                 cin >> repeatCount;
             } else 
@@ -185,9 +187,9 @@ int menu_3() {
         if (currentDay == nullptr)
         {
             currentMonth->add_days(nextDy_, false);
-            currentDay = currentMonth->get_day(new_day);
+            currentDay = currentMonth->get_day(nextDy_);
         }
-        event newEvent(s_, e_, Title, Description, 0 , repeatChoice, repeatCount);
+        event newEvent(s_, e_, Title, Description, 0 , repeatChoice, repeatCount-1);
         currentDay->add_event(newEvent);
         
         s = {0, Starting_Time_m, Starting_Time_h, date + repeatMultiple[repeatChoice-1]*(i+1), temp_tm.tm_mon, temp_tm.tm_year};
@@ -198,7 +200,7 @@ int menu_3() {
         e_ = mktime(&e);
         //cout << e_<<endl;
 
-        nextDy = {0, 0, 0, date + repeatMultiple[repeatChoice]*(i+1), temp_tm.tm_mon, temp_tm.tm_year};
+        nextDy = {0, 0, 0, date + repeatMultiple[repeatChoice-1]*(i+1), temp_tm.tm_mon, temp_tm.tm_year};
         nextDy_ = mktime(&nextDy);
         //cout << nextDy_<<endl;
 
