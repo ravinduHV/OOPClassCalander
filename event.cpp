@@ -80,3 +80,23 @@ void event::show_meeting_info()
     strftime(end, 30, " - %H%MH ", &ending_time_tm);
     cout << start << end << event_name << endl;
 }
+
+void event::show_meeting_detailed_info()
+{
+    char start[30], end[30];
+    // plz refer : https://www.w3schools.com/cpp/ref_ctime_strftime.asp
+    strftime(start, 30, "%H%M", &starting_time_tm);
+    strftime(end, 30, " - %H%MH ", &ending_time_tm);
+    cout << start << end << event_name << " -> "<< event_description << " -> ";
+    switch(repeat_option){
+        case 1:
+            cout << "Repeating(Daily)\n";
+            break;
+        case 2:
+            cout << "Repeating(Weekly)\n";
+            break;
+        case 3:
+            cout << "Non-repeating\n";
+            break;
+    }
+}

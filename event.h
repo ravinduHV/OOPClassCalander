@@ -33,6 +33,7 @@ class event
         string get_event_description();
         int get_event_id();
         void show_meeting_info();  
+        void show_meeting_detailed_info();
 };
 
 #endif

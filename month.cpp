@@ -18,7 +18,7 @@ void month::show_monthlySchedule()
 {
     char title[50];
     // plz refer : https://www.w3schools.com/cpp/ref_ctime_strftime.asp
-    strftime(title, 50, "Schedule for month of %B %Y", &month_tm);
+    strftime(title, 50, "\nSchedule for month of %B %Y", &month_tm);
     cout << title << endl;
 
     for (auto i = days.begin(); i != days.end(); ++i)
@@ -29,7 +29,39 @@ void month::show_monthlySchedule()
 
 void month::show_weeklySchedule(int week_no)
 {
-    cout << "Week " << week_no << " Schedule: " << endl;
+    int firstDay_of_firstWeek = 1;
+    tm tmp;
+    time_t tmp_;
+    for (int i = firstDay_of_firstWeek; i <= maxDays(); i++)
+    {
+        tmp = {0, 0, 0, i, month_tm.tm_mon, month_tm.tm_year};
+        tmp_ = mktime(&tmp);
+        tmp = *localtime(&tmp_);
+        if(tmp.tm_wday == 1) // Monday
+        {
+            firstDay_of_firstWeek = i;
+            break;
+        }
+    }
+    cout << "\nA schedule for week :"<< week_no;
+    char buffer[25];
+    strftime(buffer, 25,  " of the month :%B\n", &tmp);
+    day * currentDay;
+    cout << buffer;
+
+    for (int i = (firstDay_of_firstWeek+7*(week_no-1)); i<=maxDays() && i < (firstDay_of_firstWeek+7*week_no); i++)
+    {
+        tmp = {0, 0, 0, i, month_tm.tm_mon, month_tm.tm_year};
+        currentDay = get_day(mktime(&tmp));
+        if (currentDay != nullptr)
+            currentDay->show_events();
+        else{
+            char buffer[20];
+            strftime(buffer, 20, "%d %B (%a)", &tmp);
+            cout << buffer << endl;
+        }
+    }
+    cout << endl;
 }
 
 void month::show_dailySchedule(int date)
@@ -42,7 +74,7 @@ void month::show_dailySchedule(int date)
     day * currentDay = nullptr;
     event * currentEvent = nullptr;
 
-    cout << "A schedule for a day\n" << tmp << endl;
+    cout << "\nA schedule for day : " << tmp << endl;
     
     for (auto i = days.begin(); i != days.end(); ++i)
     {
@@ -92,4 +124,18 @@ day *month::get_day(time_t date)
         }
     }
     return nullptr;
+}
+
+
+int month::maxDays() {
+    int _month_ = month_tm.tm_mon + 1; 
+    if(_month_ % 2==0 && _month_!=8 && _month_!=2)
+        return 30;
+    if(_month_==2){
+        if((month_tm.tm_year+1900) % 4 == 0)
+            return 29;
+        else 
+            return 28;
+        }
+    return 31;
 }

@@ -23,6 +23,7 @@ class month
         void show_dailySchedule(int date);
         time_t get_month();
         day * get_day(time_t date);
+        int maxDays();
 };
 
 #endif

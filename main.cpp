@@ -15,20 +15,21 @@ int menu_3();
 int menu_4();
 int menu_5();
 int menu_6();
-int maxDays(int month, int year);
 
 month * currentMonth;
 tm temp_tm;
+#define MONTH  7
+#define YEAR 2024
 
 int main()
 {
     
     tm time_1;
     time_t time1;
-    time_1 = {0, 0, 0, 1, 7-1, 2024 - 1900};
+    time_1 = {0, 0, 0, 1, MONTH-1, YEAR - 1900};
     time1 = mktime(&time_1);
-    month JULY(time1);
-    currentMonth = &JULY;
+    month cursor(time1);
+    currentMonth = &cursor;
     
     while(true) {
         switch(menu_1()) {
@@ -44,7 +45,7 @@ int main()
 
 int menu_1() {
     int choice;
-    cout << "1. View Schedule\n2. Add New Event/Meeting\n3. Show Details of Scheduled Meetings\n4. Add Day Offs\n5. Meeting Controls\n6. Exit\n\tEnter your choice: ";
+    cout << "\n1. View Schedule\n2. Add New Event/Meeting\n3. Show Details of Scheduled Meetings\n4. Add Day Offs\n5. Meeting Settings\n6. Exit\n\tEnter your choice: ";
     while(true) {
         cin >> choice;
         if (choice < 1 || choice > 6) {
@@ -57,7 +58,7 @@ int menu_1() {
 
 int menu_2() {
     int choice;
-    cout << "View the Scheduled Events\n1. Daily Schedule\n2. Weekly Schedule\n3. Monthly Schedule\n\tEnter your choice: ";
+    cout << "\nView the Scheduled Events\n1. Daily Schedule\n2. Weekly Schedule\n3. Monthly Schedule\n\tEnter your choice: ";
     while(true) {
         cin >> choice;
         if (choice < 1 || choice > 3) {
@@ -81,8 +82,17 @@ int menu_2() {
         
         }
         case 2:{
-            cout << "Enter the week number (1/2/3/4/5/6): ";
-            cin >> data;
+            while (true)
+            {
+                cout << "Enter the week number (1/2/3/4/5 ?): ";
+                cin >> data;
+                if (data < 1 || data > 5)
+                    cout << "\nInvalid choice, please try again.\n";
+                else
+                    break;
+            }
+            
+            
             currentMonth->show_weeklySchedule(data);
             break;
         }
@@ -104,15 +114,15 @@ int menu_3() {
     time_t mon = currentMonth->get_month();
     temp_tm = *localtime(&mon);
     
-    char tmp[15];
-    strftime(tmp, 15, "(%Y %B ?) :", &temp_tm);
+    char tmp[25];
+    strftime(tmp, 25, "(%Y %B ?) :", &temp_tm);
      
     day * currentDay; 
 	int repeatChoice, repeatCount=1, date, Starting_Time_h, Starting_Time_m, Ending_Time_h, Ending_Time_m;
 	
     string Title, Description;
 
-    cout<<"Add new Event/Meeting\nTitle:";
+    cout<<"\nAdd new Event/Meeting\nTitle:";
     cin.ignore();   
     getline(cin, Title);
 
@@ -120,7 +130,7 @@ int menu_3() {
     cin>>date;
     while (true)
     {
-        if(date<now_tm.tm_mday || date > maxDays(temp_tm.tm_mon+1, temp_tm.tm_year+1900))
+        if(date<now_tm.tm_mday || date > currentMonth->maxDays())
         {
 		    cout<<"Entered date is invalid,please try again :";
             cin>>date;
@@ -148,12 +158,12 @@ int menu_3() {
         e = {0, Ending_Time_m, Ending_Time_h, date, temp_tm.tm_mon, temp_tm.tm_year};
         e_ = mktime(&e);
         if (e_ < s_ || s_ < now || e_ <  now || Starting_Time_m % 30 != 0|| Ending_Time_m % 30 != 0)
-            cout<<"Invalid time slot, please try again\n";
+            cout<<"Invalid time slot, please try again\n\n";
         else{
             if(currentDay->is_free(s_, e_))
                 break;
             else
-                cout<<"The time slot is already booked, please try again\n";
+                cout<<"The time slot is already booked, please try again\n\n";
         }
     }
 
@@ -174,7 +184,7 @@ int menu_3() {
         cout<<"Enter Repeat Count : ";
         cin>>repeatCount;
         while(true) {
-            int mx = maxDays(temp_tm.tm_mon+1, temp_tm.tm_year+1900);
+            int mx = currentMonth->maxDays();
             if (repeatCount <= 1 || (repeatChoice == 2 && repeatCount > ((mx-date)/repeatMultiple[1] + 1)) || (repeatChoice == 1 && repeatCount > (mx - date + repeatMultiple[0]))) {
                 cout << "Invalid choice, please try again :";
                 cin >> repeatCount;
@@ -189,8 +199,24 @@ int menu_3() {
             currentMonth->add_days(nextDy_, false);
             currentDay = currentMonth->get_day(nextDy_);
         }
-        event newEvent(s_, e_, Title, Description, 0 , repeatChoice, repeatCount-1);
-        currentDay->add_event(newEvent);
+
+        event newEvent(s_, e_, Title, Description, 0 , repeatChoice, repeatCount-i);
+        if (currentDay->is_free(s_, e_) && !currentDay->is_off_day() && !currentDay->is_weekEnd())
+        {
+            currentDay->add_event(newEvent);
+        }
+        else if (currentDay->is_free(s_, e_) && (currentDay->is_off_day() || currentDay->is_weekEnd()))
+        {
+            strftime(tmp, 25, "(%Y %B %d - %a)", localtime((i == 0) ? &new_day:&nextDy_));
+            char q;
+            cout << "The day " << tmp << " is off/weekend, Are you sure? (Y/N):\n";
+            cin >> q;
+            if (q == 'Y' || q == 'y')
+            {
+                currentDay->add_event(newEvent);
+                cout << "Event added successfully\n";
+            }
+        }
         
         s = {0, Starting_Time_m, Starting_Time_h, date + repeatMultiple[repeatChoice-1]*(i+1), temp_tm.tm_mon, temp_tm.tm_year};
         s_ = mktime(&s);
@@ -226,42 +252,134 @@ int menu_4() {
 
 int menu_5() {
 	int date;
-    cout<<"Add Dayoffs\n Enter the required date:\n";
+    time_t ref_mon_t = currentMonth->get_month(), now;
+    tm ref_mon = *localtime(&ref_mon_t), now_tm;
+    time(&now);
+    now_tm = *localtime(&now);
+
+    char quote[60];
+    strftime(quote, 60, "Add Dayoffs\nEnter the required date (%Y %B ?) :", &ref_mon);
+    cout<<quote;
     while(true) {
-    	cin>>date;
-        if(date>=1 && date<=31){
-			cout<<date<<"/07/2024";							
-		}else{
-			cout<<"Entered date is invalid,please try again";
-		}
+    	cin >> date;
+        if(date<now_tm.tm_mday && date > currentMonth->maxDays())
+            cout<<"Entered date is invalid,please try again : ";
+        else
+            break;
     }
+    now_tm = {0, 0, 0, date, ref_mon.tm_mon, ref_mon.tm_year};
+    now = mktime(&now_tm);
+    if (currentMonth->get_day(now) == nullptr)
+        currentMonth->add_days(now, true);
+    else
+        currentMonth->get_day(now)->set_offDay();
     return date;
 }
 
 int menu_6() {
-	int choice;
-    cout<<"Meeting Controls\n1.Shift a event/meeting\n2.Edit a scheduled event/meeting\n3.Delete a scheduled event/meeting\n";
-    cout<<"Enter your prefered setting:";
-    cin >> choice;
+	int settingChoice, date, meetingChoice;
+    event * currentEvent;
+    cout<<"Meeting Setting\n1. Shift a event/meeting\n2. Edit a scheduled event/meeting\n3. Delete a scheduled event/meeting\n";
+    cout<<"\n\tEnter your prefered setting:";
 	while(true) {
-        cin >> choice;
-        if (choice < 1 || choice > 3) 
-            cout << "Invalid choice, please try again: ";
+        cin >> settingChoice;
+        if (settingChoice < 1 || settingChoice > 3) 
+            cout << "\tInvalid choice, please try again: ";
         else
             break;
     }
-    return choice;
+
+    tm now_tm;
+    time_t now;
+    time(&now);
+    now_tm = *localtime(&now);
+
+    time_t mon = currentMonth->get_month();
+    temp_tm = *localtime(&mon);
+    
+    char tmp[25];
+    strftime(tmp, 25, "(%Y %B ?) :", &temp_tm);
+     
+    day * currentDay; 	
+    cout<<"Date "<<tmp;
+    while (true)
+    {
+        cin>>date;
+        if(date<now_tm.tm_mday || date > currentMonth->maxDays())
+		    cout<<"Entered date is invalid,please try again :";
+        else
+            break;
+    }
+    now_tm = {0, 0, 0, date, temp_tm.tm_mon, temp_tm.tm_year};
+    now = mktime(&now_tm);
+
+    currentDay = currentMonth->get_day(now);
+    if (currentDay == nullptr){
+        cout << "No events/meetings scheduled for the day\n";
+        return 0;
+    }
+
+    currentDay->show_events_details();
+    cout << "\n\tEnter the ID(1,2,..) to select the event/meeting: ";
+    while (true)
+    {
+        cin >> meetingChoice;
+        if (meetingChoice < 1 || meetingChoice > currentDay->no_ofEvents())
+            cout << "\tInvalid choice, please try again: ";
+        else
+            break;
+    }
+    currentEvent = currentDay->get_event(meetingChoice-1); // by gettting whole object we can access all the details of the event and pop up the event in the vector.
+    switch (settingChoice){
+        case 1:{ //shift event
+            int Starting_Time_h, Starting_Time_m, Ending_Time_h, Ending_Time_m;
+            tm s_, e_;
+            time_t s,e;
+            char time_[25];
+            temp_tm = *localtime(currentEvent->get_starting_time());
+            strftime(time_, 25, "(%H %M) :", &temp_tm);
+            cout << "shift starting time " << time_;
+            cin >> Starting_Time_h >> Starting_Time_m;
+            temp_tm = *localtime(currentEvent->get_ending_time());
+            strftime(time_, 25, "(%H %M) :", &temp_tm);
+            cout << "shift ending time " << time_;
+            cin >> Ending_Time_h >> Ending_Time_m;
+            s_ = {0, Starting_Time_m, Starting_Time_h, date, temp_tm.tm_mon, temp_tm.tm_year};
+            e_ = {0, Ending_Time_m, Ending_Time_h, date, temp_tm.tm_mon, temp_tm.tm_year};
+            s = mktime(&s_);
+            e = mktime(&e_);
+            if(e < s || s < now || e < now || Starting_Time_m % 30 != 0 || Ending_Time_m % 30 != 0)
+                cout << "Invalid time slot, please try again\n";
+            if (currentDay->is_free(s, e) || (*currentEvent->get_starting_time() <= s && *currentEvent->get_ending_time() >= e)|| 
+                    currentDay->is_free(s, *currentEvent->get_starting_time()) && (*currentEvent->get_starting_time() <= e && *currentEvent->get_ending_time() >= e)||
+                    currentDay->is_free(*currentEvent->get_ending_time(), e) && (*currentEvent->get_starting_time() <= s && *currentEvent->get_ending_time() >= s) ||
+                    currentDay->is_free(s, *currentEvent->get_starting_time()) && currentDay->is_free(*currentEvent->get_ending_time(), e))
+                currentDay->shift_event(currentEvent->get_event_id(), s, e);
+            else
+                cout << "The time slot is already booked, please try again\n";
+            break;
+        }
+        case 2:{ // edit event description
+            string Description, name;
+            cout << "The current name is: " << currentEvent->get_event_name() << endl;
+            cout << "If you want to change the name, enter the new name: ";
+            cin.ignore();
+            getline(cin, name);
+            cout << "The current description is: " << currentEvent->get_event_description() << endl;
+            cout << "If you want to change the description, enter the new description: ";
+            cin.ignore();
+            getline(cin, Description);
+            currentDay->edit_event(currentEvent->get_event_id(), Description, name);
+            break;
+        }
+        case 3:{ // delete event
+            currentDay->remove_event(currentEvent->get_event_id());
+            cout << "Event deleted successfully\n";
+            break;
+        }
+    }
+
+
+    return 0;
 }
 
-int maxDays(int month, int year) {
-    //month 1-12 
-    if(month % 2==0 && month!=8 && month!=2)
-        return 30;
-    if(month==2){
-        if(year % 4 == 0)
-            return 29;
-        else 
-            return 28;
-        }
-    return 31;
-}

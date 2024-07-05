@@ -27,6 +27,23 @@ void day::show_events()
     }
 }
 
+void day::show_events_details()
+{
+    if (events.size() != 0)
+    {
+        char buffer[80];
+        int tracker = 0;
+        strftime(buffer, 20, "%d %b (%a)", &date_tm);
+        cout << buffer << endl;
+        for (auto i = events.begin(); i != events.end(); i++)
+        {
+            tracker++;
+            cout <<"\t"<< tracker<<". ";
+            i->show_meeting_detailed_info();
+        }
+    }
+}
+
 void day::add_event(event _event)
 { 
     _event.set_event_ID(next_id); 
@@ -36,45 +53,61 @@ void day::add_event(event _event)
 
 void day::remove_event(int id)
 {
-    for (int i = 0; i < events.size(); i++)
+    for (auto i = events.begin(); i != events.end(); i++)
     {
-        if (events[i].get_event_id() == id)
+        if (i->get_event_id() == id)
         {
-            events.erase(events.begin() + i);
-            events.shrink_to_fit();
+            events.erase(i);
             break;
         }
     }
 }
 
-void day::edit_event(int id)
+void day::edit_event(int id, string newDescription="", string newName = "")
 {
-
+    for (auto i = events.begin(); i != events.end(); i++)
+    {
+        if (i->get_event_id() == id)
+        {
+            if (newDescription != "")
+                i->set_event_description(newDescription);
+            if (newName != "")
+                i->set_event_name(newName);
+            break;
+        }
+    }
 }
 
 void day::shift_event(int id, time_t starting_time, time_t ending_time)
 {   
-    /*time_t new_start_time = {0,0,0,0,starting_time,0};
-    time_t new_ending_time(0,0,0,ending_time,0);
-
-	for (int i = 0; i < events.size(); i++)
+    for (auto i = events.begin(); i != events.end(); i++)
     {
-        if (events[i].get_event_id() == id)
+        if (i->get_event_id() == id)
         {
-            events[i].set_starting_time(new_start_time); 
-            events[i].set_ending_time(new_ending_time);
+            i->set_starting_time(starting_time);
+            i->set_ending_time(ending_time);
+            break;
         }
-    }*/
+    }
 }
 
 bool day::is_free(time_t starting_time, time_t ending_time)
 {
+    for (auto i = events.begin(); i != events.end(); i++)
+    {
+        if (starting_time >= *i->get_starting_time() && starting_time < *i->get_ending_time())
+            return false;
+        if (ending_time > *i->get_starting_time() && ending_time <= *i->get_ending_time())
+            return false;
+        if (starting_time <= *i->get_starting_time() && ending_time >= *i->get_ending_time())
+            return false;
+    }
     return true;
 }
 
 bool day::is_off_day()
 {
-    return !is_offDay;
+    return is_offDay;
 }
 
 bool day::is_weekEnd()
@@ -88,6 +121,7 @@ void day::set_offDay()
 {
     is_offDay = true;
     events.clear();
+    events.shrink_to_fit();
     next_id = 0;
 }
 
@@ -112,4 +146,8 @@ event* day::at_this_time(time_t time)
         }
     }
     return nullptr;
+}
+
+event* day::get_event(int index){
+    return &events[index];
 }
