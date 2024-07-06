@@ -23,7 +23,7 @@ tm temp_tm;
 #define MONTH  7
 #define YEAR 2024
 
-int main()//shcbhcbe
+int main()
 {
     time_t time1;
     tm time_1 = {0, 0, 0, 1, MONTH-1, YEAR - 1900};
