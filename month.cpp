@@ -139,3 +139,9 @@ int month::maxDays() {
         }
     return 31;
 }
+
+void month::removeEvents(event *_event)
+{
+    // remove all repeated events
+    
+}

@@ -24,6 +24,7 @@ class month
         time_t get_month();
         day * get_day(time_t date);
         int maxDays();
+        void removeEvents(event* _event);
 };
 
 #endif
