@@ -35,6 +35,7 @@ public:
     time_t* get_date();
     event* at_this_time(time_t time);
     event* get_event(int index);
+    void sort_events();
 };
 
 #endif

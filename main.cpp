@@ -25,10 +25,8 @@ tm temp_tm;
 
 int main()
 {
-    
-    tm time_1;
     time_t time1;
-    time_1 = {0, 0, 0, 1, MONTH-1, YEAR - 1900};
+    tm time_1 = {0, 0, 0, 1, MONTH-1, YEAR - 1900};
     time1 = mktime(&time_1);
     month cursor(time1);
     currentMonth = &cursor;
@@ -43,6 +41,7 @@ int main()
             case 6: { cout << "Exiting the program..." << endl; return 0;} // Exit
         }
     }
+    return 0;
 }
 
 int menu_1() {
@@ -109,6 +108,7 @@ int menu_2() {
 int menu_3() {
     tm newDy, s, e, now_tm, nextDy;
     time_t s_, e_, now, nextDy_;
+    
     time(&now);
     now_tm = *localtime(&now);
     vector<int> repeatMultiple = {1, 7, 1};
@@ -117,7 +117,7 @@ int menu_3() {
     temp_tm = *localtime(&mon);
     
     char quote[25];
-     
+    
     day * currentDay; 
 	int repeatChoice, repeatCount=1, date, Starting_Time_h, Starting_Time_m, Ending_Time_h, Ending_Time_m;
 	
@@ -131,13 +131,14 @@ int menu_3() {
 
     newDy = {0, 0, 0, date, temp_tm.tm_mon, temp_tm.tm_year};
     time_t new_day = mktime(&newDy);
-
     currentDay = currentMonth->get_day(new_day);
+
     if (currentDay == nullptr)
     {
         currentMonth->add_days(new_day, false);
         currentDay = currentMonth->get_day(new_day);
-    }							
+    }
+
     while(true){
         cout<<"Starting Time (HH MM) :";
         cin>>Starting_Time_h>>Starting_Time_m;
@@ -322,7 +323,7 @@ int menu_6() {
         cout << "No events/meetings scheduled for the day\n";
         return 1;
     }
-
+    
     meetingChoice = choose_event(currentDay);
 
     currentEvent = currentDay->get_event(meetingChoice-1); // by gettting whole object we can access all the details of the event and pop up the event in the vector.
@@ -357,7 +358,7 @@ int menu_6() {
             }
             else
                 cout << "The time slot is already booked, please try again\n";
-            
+
             break;
         }
         case 2:{ // edit event description
@@ -379,7 +380,6 @@ int menu_6() {
             break;
         }
     }
-    //madhuka
 
     return 0;
 }

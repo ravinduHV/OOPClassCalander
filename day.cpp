@@ -50,10 +50,11 @@ void day::show_events_details()
 }
 
 void day::add_event(event _event)
-{ 
+{
     _event.set_event_ID(next_id); 
     events.push_back(_event);  
     next_id++;
+    sort_events();
 }
 
 void day::remove_event(int id)
@@ -156,6 +157,21 @@ time_t* day::get_date()
     return &date;
 }
 
+void day::sort_events()
+{
+    for (auto i = events.begin(); i != events.end(); i++)
+    {
+        for (auto j = i; j != events.end(); j++)
+        {
+            if (*i->get_starting_time() > *j->get_starting_time())
+            {
+                event temp = *i;
+                *i = *j;
+                *j = temp;
+            }
+        }
+    }
+}
 
 event* day::at_this_time(time_t time)
 {

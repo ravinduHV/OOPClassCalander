@@ -5,6 +5,7 @@ void month::add_days(time_t day_dt, bool off)
 {
     day temp(day_dt, off);
     days.push_back(temp);
+    sort_days();
 }
 
 month::month(time_t _month)
@@ -143,5 +144,19 @@ int month::maxDays() {
 void month::removeEvents(event *_event)
 {
     // remove all repeated events
-    
+
+}
+
+void month::sort_days()
+{
+    for(auto i = days.begin(); i != days.end(); i++)
+    {
+        for (auto j = i+1; j != days.end(); j++)
+        {
+            if (*i->get_date() > *j->get_date())
+            {
+                swap(*i, *j);
+            }
+        }
+    }
 }
