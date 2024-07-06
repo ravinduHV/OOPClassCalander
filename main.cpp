@@ -238,16 +238,43 @@ int menu_3() {
 
 int menu_4() {
 	int date;
-    cout<<"Enter the date of the Scheduled Event/Meeting: ";
-    while(true){
-    	cin>>date;
-		if(date>=1 && date<=31){
-			cout<<"The details of the Event Scheduled on "<<date<<"/07/2024 are:";							
-		}else{
-			cout<<"Entered date is invalid,please try again";
-		}
-	}	
-	return date;
+    time_t ref_mon_t = currentMonth->get_month();
+    tm ref_mon = *localtime(&ref_mon_t);
+
+    char quote[60];
+    strftime(quote, 60, "Show Meeting Info\nEnter the required date (%Y %B ?) :", &ref_mon);
+    cout<<quote;
+    while(true) {
+    	cin >> date;
+        if(date < 1 && date > currentMonth->maxDays())
+            cout<<"Entered date is invalid,please try again : ";
+        else
+            break;
+    }
+    tm now_tm = {0, 0, 0, date, ref_mon.tm_mon, ref_mon.tm_year};
+    time_t now = mktime(&now_tm);
+    day * currentDay = currentMonth->get_day(now);
+    if (currentDay == nullptr || currentDay->no_ofEvents() == 0){
+        cout << "No events/meetings scheduled for the day\n";
+        return 1;
+    }
+
+    int meetingChoice;
+    currentDay->show_events(true);
+    cout << "\n\tEnter the ID(1,2,..) to select the event/meeting: ";
+    while (true)
+    {
+        cin >> meetingChoice;
+        if (meetingChoice < 1 || meetingChoice > currentDay->no_ofEvents())
+            cout << "\tInvalid choice, please try again: ";
+        else
+            break;
+    }
+
+    event * currentEvent = currentDay->get_event(meetingChoice-1);
+    cout << "\t";
+    currentEvent->show_meeting_detailed_info();
+	return 0;
 }
 
 int menu_5() {
@@ -314,9 +341,9 @@ int menu_6() {
     now = mktime(&now_tm);
 
     currentDay = currentMonth->get_day(now);
-    if (currentDay == nullptr){
+    if (currentDay == nullptr || currentDay->no_ofEvents() == 0){
         cout << "No events/meetings scheduled for the day\n";
-        return 0;
+        return 1;
     }
 
     currentDay->show_events_details();
@@ -335,28 +362,33 @@ int menu_6() {
             int Starting_Time_h, Starting_Time_m, Ending_Time_h, Ending_Time_m;
             tm s_, e_;
             time_t s,e;
+
             char time_[25];
             temp_tm = *localtime(currentEvent->get_starting_time());
             strftime(time_, 25, "(%H %M) :", &temp_tm);
+            
             cout << "shift starting time " << time_;
             cin >> Starting_Time_h >> Starting_Time_m;
+            
             temp_tm = *localtime(currentEvent->get_ending_time());
             strftime(time_, 25, "(%H %M) :", &temp_tm);
+            
             cout << "shift ending time " << time_;
             cin >> Ending_Time_h >> Ending_Time_m;
+            
             s_ = {0, Starting_Time_m, Starting_Time_h, date, temp_tm.tm_mon, temp_tm.tm_year};
             e_ = {0, Ending_Time_m, Ending_Time_h, date, temp_tm.tm_mon, temp_tm.tm_year};
             s = mktime(&s_);
             e = mktime(&e_);
+            time(&now);
             if(e < s || s < now || e < now || Starting_Time_m % 30 != 0 || Ending_Time_m % 30 != 0)
                 cout << "Invalid time slot, please try again\n";
-            if (currentDay->is_free(s, e) || (*currentEvent->get_starting_time() <= s && *currentEvent->get_ending_time() >= e)|| 
-                    currentDay->is_free(s, *currentEvent->get_starting_time()) && (*currentEvent->get_starting_time() <= e && *currentEvent->get_ending_time() >= e)||
-                    currentDay->is_free(*currentEvent->get_ending_time(), e) && (*currentEvent->get_starting_time() <= s && *currentEvent->get_ending_time() >= s) ||
-                    currentDay->is_free(s, *currentEvent->get_starting_time()) && currentDay->is_free(*currentEvent->get_ending_time(), e))
+            if (currentDay->is_free(s, e, currentEvent->get_event_id())){
                 currentDay->shift_event(currentEvent->get_event_id(), s, e);
+            }
             else
                 cout << "The time slot is already booked, please try again\n";
+            
             break;
         }
         case 2:{ // edit event description

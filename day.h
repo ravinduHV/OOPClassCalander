@@ -20,13 +20,14 @@ private:
 
 public:
     day(time_t _date, bool is_offDay_);  
-    void show_events();
+    void show_events(bool showIndex);
     void show_events_details();
     void add_event(event _event);
     void remove_event(int id);
     void edit_event(int id, string newDescription, string newName);
     void shift_event(int id, time_t starting_time, time_t ending_time); 
     bool is_free(time_t starting_time, time_t ending_time);
+    bool is_free(time_t starting_time, time_t ending_time, int ignore_event_ID);
     bool is_off_day();
     bool is_weekEnd();
     void set_offDay();

@@ -12,16 +12,21 @@ day::day(time_t _date, bool is_offDay_)
     date_tm = *localtime(&date);
 }
 
-void day::show_events()
+void day::show_events(bool showIndex)
 {
     if (events.size() != 0)
     {
         char buffer[80];
+        int tracker = 0;
         strftime(buffer, 20, "%d %b (%a)", &date_tm);
         cout << buffer << endl;
         for (auto i = events.begin(); i != events.end(); i++)
         {
-            cout <<"\t";
+            tracker++;
+            if (showIndex)
+                cout <<"\t"<< tracker <<". ";
+            else
+                cout <<"\t";
             i->show_meeting_info();
         }
     }
@@ -101,6 +106,22 @@ bool day::is_free(time_t starting_time, time_t ending_time)
             return false;
         if (starting_time <= *i->get_starting_time() && ending_time >= *i->get_ending_time())
             return false;
+    }
+    return true;
+}
+
+bool day::is_free(time_t starting_time, time_t ending_time, int ignore_event_ID)
+{
+    for (auto i = events.begin(); i != events.end(); i++)
+    {
+        if (i->get_event_id() != ignore_event_ID){
+            if (starting_time >= *i->get_starting_time() && starting_time < *i->get_ending_time())
+                return false;
+            if (ending_time > *i->get_starting_time() && ending_time <= *i->get_ending_time())
+                return false;
+            if (starting_time <= *i->get_starting_time() && ending_time >= *i->get_ending_time())
+                return false;
+        }
     }
     return true;
 }

@@ -69,7 +69,7 @@ string event::get_event_description()
 
 int event::get_event_id()
 {
-    return get_event_id();
+    return event_id;
 }
 
 void event::show_meeting_info()

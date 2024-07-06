@@ -23,7 +23,7 @@ void month::show_monthlySchedule()
 
     for (auto i = days.begin(); i != days.end(); ++i)
     {
-        i->show_events();
+        i->show_events(false);
     }
 }
 
@@ -54,7 +54,7 @@ void month::show_weeklySchedule(int week_no)
         tmp = {0, 0, 0, i, month_tm.tm_mon, month_tm.tm_year};
         currentDay = get_day(mktime(&tmp));
         if (currentDay != nullptr)
-            currentDay->show_events();
+            currentDay->show_events(false);
         else{
             char buffer[20];
             strftime(buffer, 20, "%d %B (%a)", &tmp);
