@@ -74,5 +74,5 @@ To compile and run the application, use a C++ compiler that supports C++11 or la
 ```bash
 g++ main.cpp event.cpp event.h day.cpp day.h month.h month.cpp  -o CalendarManagementSystem
 ./CalendarManagementSystem
-
+```
 This project is maintained by [@ravinduHV](https://github.com/ravinduHV).
