@@ -17,6 +17,7 @@ int menu_5();
 int menu_6();
 int choose_date(bool previousDays);
 int choose_event(day * currentDay);
+vector<event *> get_repeated_events(time_t date, int repeatOption, int repeatCount, int repeatPosition, bool withPrevious, string name);
 
 month * currentMonth;
 tm temp_tm;
@@ -28,7 +29,7 @@ int main()
     time_t time1;
     tm time_1 = {0, 0, 0, 1, MONTH-1, YEAR - 1900};
     time1 = mktime(&time_1);
-    month cursor(time1);
+    month cursor(time1); //month object
     currentMonth = &cursor;
     
     while(true) {
@@ -68,6 +69,7 @@ int menu_2() {
             break;
         }
     }
+    
     int data;
     time_t mon = currentMonth->get_month();
     temp_tm = *localtime(&mon);
@@ -192,7 +194,7 @@ int menu_3() {
             currentDay = currentMonth->get_day(nextDy_);
         }
 
-        event newEvent(s_, e_, Title, Description, 0 , repeatChoice, repeatCount-i);
+        event newEvent(s_, e_, Title, Description, 0 , repeatChoice, repeatCount, i+1);
         if (currentDay->is_free(s_, e_) && !currentDay->is_off_day() && !currentDay->is_weekEnd())
         {
             currentDay->add_event(newEvent);
@@ -295,7 +297,7 @@ int menu_5() {
 
 int menu_6() {
 	int settingChoice, date, meetingChoice;
-    event * currentEvent;
+    vector<int> repeatMultiple = {1, 7, 1};
     cout<<"Meeting Setting\n1. Shift a event/meeting\n2. Edit a scheduled event/meeting\n3. Delete a scheduled event/meeting\n";
     cout<<"\n\tEnter your prefered setting:";
 	while(true) {
@@ -323,10 +325,10 @@ int menu_6() {
         cout << "No events/meetings scheduled for the day\n";
         return 1;
     }
-    
+
     meetingChoice = choose_event(currentDay);
 
-    currentEvent = currentDay->get_event(meetingChoice-1); // by gettting whole object we can access all the details of the event and pop up the event in the vector.
+    event * currentEvent = currentDay->get_event(meetingChoice-1); // by gettting whole object we can access all the details of the event and pop up the event in the vector.
     switch (settingChoice){
         case 1:{ //shift event
             int Starting_Time_h, Starting_Time_m, Ending_Time_h, Ending_Time_m;
@@ -352,8 +354,71 @@ int menu_6() {
             e = mktime(&e_);
             time(&now);
             if(e < s || s < now || e < now || Starting_Time_m % 30 != 0 || Ending_Time_m % 30 != 0)
+            {
                 cout << "Invalid time slot, please try again\n";
-            if (currentDay->is_free(s, e, currentEvent->get_event_id())){
+                break;
+            }
+            if (currentEvent->get_repeat_option() != 3){
+                cout << "The event is repeating, do you want to shift all the events or just this one? (A/S): ";
+                char choice;
+                cin >> choice;
+                if (choice == 'A' || choice == 'a'){
+                    cout << "Do you want to shift all the events or just the future events? (A/F): ";
+                    cin >> choice;
+                    bool possibleTimeChange = true;
+                    vector<event *> repeatedEvents;
+                    repeatedEvents = get_repeated_events(*currentEvent->get_starting_time(), currentEvent->get_repeat_option(), currentEvent->get_repeat_count(), currentEvent->get_repeat_position(), (choice == 'A' || choice == 'a'), currentEvent->get_event_name());
+                    for (auto i = repeatedEvents.begin(); i != repeatedEvents.end(); i++)
+                    {
+                        time_t _s_ = *(*i)->get_starting_time(), currDay_t; 
+                        tm refTm = *localtime(&_s_), currDay;
+                        currDay = {0, 0, 0, refTm.tm_mday, refTm.tm_mon, refTm.tm_year};
+                        currDay_t = mktime(&currDay);
+                        currentDay = currentMonth->get_day(currDay_t);
+                         
+                        s_ = {0, Starting_Time_m, Starting_Time_h, refTm.tm_mday, refTm.tm_mon, refTm.tm_year};
+                        e_ = {0, Ending_Time_m, Ending_Time_h, refTm.tm_mday, refTm.tm_mon, refTm.tm_year};
+                        s = mktime(&s_);
+                        e = mktime(&e_);
+
+                        if (!currentDay->is_free(s, e, (*i)->get_event_id())){
+                            cout << "The time slot is already booked in "<< refTm.tm_year<<"/"<<refTm.tm_mon+1<<"/"<<refTm.tm_mday<< " , please try again\n";
+                            possibleTimeChange = false;
+                        }
+                    }
+                    if (possibleTimeChange){
+                        for (auto i = repeatedEvents.begin(); i != repeatedEvents.end(); i++)
+                        {
+                            tm refTm = *localtime((*i)->get_starting_time());
+
+                            tm currDay = {0, 0, 0, refTm.tm_mday, refTm.tm_mon, refTm.tm_year};
+                            time_t currDay_t = mktime(&currDay);
+                            currentDay = currentMonth->get_day(currDay_t);
+                            
+                            s_ = {0, Starting_Time_m, Starting_Time_h, refTm.tm_mday, refTm.tm_mon, refTm.tm_year};
+                            e_ = {0, Ending_Time_m, Ending_Time_h, refTm.tm_mday, refTm.tm_mon, refTm.tm_year};
+                            s = mktime(&s_);
+                            e = mktime(&e_);
+                            currentDay->shift_event((*i)->get_event_id(), s, e);
+                        }
+                        break;
+                    }
+                    else
+                        break;
+                }
+                else{
+
+                    if (currentDay->is_free(s, e, currentEvent->get_event_id())){
+                        currentDay->shift_event(currentEvent->get_event_id(), s, e);
+                        break;
+                    }
+                    else
+                        cout << "The time slot is already booked, please try again\n";
+                        break;
+                    // shift only this event
+                }
+            }
+            if (currentEvent->get_repeat_option() == 3 && currentDay->is_free(s, e, currentEvent->get_event_id())){
                 currentDay->shift_event(currentEvent->get_event_id(), s, e);
             }
             else
@@ -363,6 +428,7 @@ int menu_6() {
         }
         case 2:{ // edit event description
             string Description, name;
+            char choice;
             cout << "The current name is: " << currentEvent->get_event_name() << endl;
             cout << "If you want to change the name, enter the new name: ";
             cin.ignore();
@@ -371,16 +437,49 @@ int menu_6() {
             cout << "If you want to change the description, enter the new description: ";
             cin.ignore();
             getline(cin, Description);
-            currentDay->edit_event(currentEvent->get_event_id(), Description, name);
+            cout << "The event is repeating, do you want to edit all the events or just this one? (A/S): ";
+            cin >> choice;
+            if (choice == 'A' || choice == 'a')
+            {
+                cout << "Do you want to edit all the events or just the future events? (A/F): ";
+                cin >> choice;
+                vector<event *> repeatedEvents = get_repeated_events(*currentEvent->get_starting_time(), currentEvent->get_repeat_option(), currentEvent->get_repeat_count(), currentEvent->get_repeat_position(), (choice == 'A' || choice == 'a'), currentEvent->get_event_name());
+                for (auto i = repeatedEvents.begin(); i != repeatedEvents.end(); i++)
+                {
+                    (*i)->set_event_name(name);
+                    (*i)->set_event_description(Description);
+                }
+            }
+            else {
+                currentDay->edit_event(currentEvent->get_event_id(), Description, name);
+            }
             break;
         }
         case 3:{ // delete event
-            currentDay->remove_event(currentEvent->get_event_id());
+            char choice;
+            cout << "The event is repeating, do you want to delete all the events or just this one? (A/S): ";
+            cin >> choice;
+            if (choice == 'A' || choice == 'a')
+            {
+                cout << "Do you want to delete all the events or just the future events? (A/F): ";
+                cin >> choice;
+                vector<event *> repeatedEvents = get_repeated_events(*currentEvent->get_starting_time(), currentEvent->get_repeat_option(), currentEvent->get_repeat_count(), currentEvent->get_repeat_position(), (choice == 'A' || choice == 'a'), currentEvent->get_event_name());
+                for (auto i = repeatedEvents.begin(); i != repeatedEvents.end(); i++)
+                {
+                    tm refTm = *localtime((*i)->get_starting_time());
+                    tm currDay = {0, 0, 0, refTm.tm_mday, refTm.tm_mon, refTm.tm_year};
+                    time_t currDay_t = mktime(&currDay);
+                    day * currentDay = currentMonth->get_day(currDay_t);
+                    currentDay->remove_event((*i)->get_event_id());
+                }
+            }
+            else{
+                currentDay->remove_event(currentEvent->get_event_id());
+            }
             cout << "Event deleted successfully\n";
             break;
         }
     }
-
     return 0;
 }
 
@@ -419,4 +518,47 @@ int choose_date(bool previousDays = true){
             break;
     }
     return date;
+}
+
+vector<event *> get_repeated_events(time_t firstMeetingDate, int repeatOption, int repeatCount, int repeatPosition, bool withPrevious, string name){
+    vector<int> repeatMultiple = {1, 7}; // daily, weekly
+    day * firstDay = currentMonth->get_day(firstMeetingDate);
+    vector<event *> repeatedEvents;
+    tm refDate = *localtime(&firstMeetingDate);
+    if (withPrevious){
+        refDate.tm_mday -= repeatMultiple[repeatOption-1]*(repeatPosition - 1);
+        for (int i = 1; i <= repeatCount; i++)
+        {
+            tm tmpDt = {0, 0, 0, refDate.tm_mday + repeatMultiple[repeatOption-1]*(i-1), refDate.tm_mon, refDate.tm_year};
+            tm tmpEv = {0, refDate.tm_min, refDate.tm_hour, refDate.tm_mday + repeatMultiple[repeatOption-1]*(i-1), refDate.tm_mon, refDate.tm_year};
+            time_t tmpDt_ = mktime(&tmpDt);
+            time_t tmpEv_ = mktime(&tmpEv);
+            day * currentDay = currentMonth->get_day(tmpDt_);
+            if (currentDay != nullptr)
+            {
+                event * currentEvent = currentDay->at_this_time(tmpEv_,name,repeatOption);
+                if (currentEvent != nullptr)
+                    repeatedEvents.push_back(currentEvent);
+            }    
+        }
+
+    }
+    else{
+        for (int i = repeatPosition; i <= repeatCount; i++)
+        {
+            tm tmpDt = {0, 0, 0, refDate.tm_mday + repeatMultiple[repeatOption-1]*(i-repeatPosition), refDate.tm_mon, refDate.tm_year};
+            tm tmpEv = {0, refDate.tm_min, refDate.tm_hour, refDate.tm_mday + repeatMultiple[repeatOption-1]*(i-repeatPosition), refDate.tm_mon, refDate.tm_year};
+            time_t tmpDt_ = mktime(&tmpDt);
+            time_t tmpEv_ = mktime(&tmpEv);
+            day * currentDay = currentMonth->get_day(tmpDt_);
+            if (currentDay != nullptr)
+            {
+                event * currentEvent = currentDay->at_this_time(tmpEv_, name, repeatOption);
+                if (currentEvent != nullptr)
+                    repeatedEvents.push_back(currentEvent);
+            } 
+        }
+
+    }
+    return repeatedEvents;
 }

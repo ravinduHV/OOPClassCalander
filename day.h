@@ -34,6 +34,7 @@ public:
     int no_ofEvents();
     time_t* get_date();
     event* at_this_time(time_t time);
+    event* at_this_time(time_t time, string name, int repeatOption);
     event* get_event(int index);
     void sort_events();
 };

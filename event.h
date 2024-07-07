@@ -18,9 +18,10 @@ class event
         int event_id;
         int repeat_option; // 0-non-repeating, 1 for daily, 2 for weekly
         int repeat_count;
+        int repeat_position;
 
     public:
-        event(time_t _starting_time, time_t _ending_time, string _event_name, string _event_description, int _event_id, int _repeat_option, int _repeat_count);
+        event(time_t _starting_time, time_t _ending_time, string _event_name, string _event_description, int _event_id, int _repeat_option, int _repeat_count, int _repeat_position);
         void set_starting_time(time_t time);
         void set_ending_time(time_t time);
         void set_event_name(string name);
@@ -33,6 +34,9 @@ class event
         int get_event_id();
         void show_meeting_info();  
         void show_meeting_detailed_info();
+        int get_repeat_option();
+        int get_repeat_count();
+        int get_repeat_position();
 };
 
 #endif

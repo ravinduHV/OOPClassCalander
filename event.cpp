@@ -4,7 +4,7 @@
 
 using namespace std;
 
-event::event(time_t _starting_time, time_t _ending_time, string _event_name, string _event_description, int _event_id, int _repeat_option, int _repeat_count)
+event::event(time_t _starting_time, time_t _ending_time, string _event_name, string _event_description, int _event_id, int _repeat_option, int _repeat_count, int _repeat_position)
 {
     starting_time = _starting_time;
     ending_time = _ending_time;
@@ -13,9 +13,11 @@ event::event(time_t _starting_time, time_t _ending_time, string _event_name, str
     event_id = _event_id;
     repeat_option = _repeat_option;
     repeat_count = _repeat_count;
+    repeat_position = _repeat_position;
 
     starting_time_tm = *localtime(&starting_time);
     ending_time_tm = *localtime(&ending_time);
+
 }
 
 
@@ -99,4 +101,19 @@ void event::show_meeting_detailed_info()
             cout << "Non-repeating\n";
             break;
     }
+}
+
+int event::get_repeat_option()
+{
+    return repeat_option;
+}
+
+int event::get_repeat_count()
+{
+    return repeat_count;
+}
+
+int event::get_repeat_position()
+{
+    return repeat_position;
 }

@@ -188,3 +188,16 @@ event* day::at_this_time(time_t time)
 event* day::get_event(int index){
     return &events[index];
 }
+
+
+event* day::at_this_time(time_t time, string name, int repeatOption){
+    for (auto i = events.begin(); i != events.end(); i++)
+    {
+        if (time == *i->get_starting_time() && (i->get_event_name()).compare(name) == 0 && i->get_repeat_option() == repeatOption)
+        {
+            return &(*i);
+        }
+    }
+    return nullptr;
+}
+
