@@ -1,11 +1,11 @@
 # Calendar Management System
 
 ## Contributors
-1. 22/ENG/013 - A.M.A.P. Atapattu (EE)
-2. 22/ENG/106 - N.L. Sirimanne (EE)
-3. 22/ENG/120 - P.M.T. Kehara (EE)
-4. 22/ENG/050 - H.M.R.V.Herath(CO)
-5. 22/ENG/123 - P. Nithurjithan (EE)
+1. 22/ENG/013 - A.M.A.P. Atapattu (EE) [@APA337](https://github.com/APA337)
+2. 22/ENG/106 - N.L. Sirimanne (EE) 
+3. 22/ENG/120 - P.M.T. Kehara (EE) [@Kehara2002](https://github.com/Kehara2002)
+4. 22/ENG/050 - H.M.R.V.Herath(CO) [@ravinduHV](https://github.com/ravinduHV)
+5. 22/ENG/123 - P. Nithurjithan (EE) 
 
 ## Overview
 
@@ -75,4 +75,4 @@ To compile and run the application, use a C++ compiler that supports C++11 or la
 g++ main.cpp event.cpp event.h day.cpp day.h month.h month.cpp  -o CalendarManagementSystem
 ./CalendarManagementSystem
 ```
-This project is maintained by [@ravinduHV](https://github.com/ravinduHV).
+
