@@ -1,5 +1,12 @@
 # Calendar Management System
 
+## Contributors
+1. 22/ENG/013 - A.M.A.P. Atapattu (EE)
+2. 22/ENG/106 - N.L. Sirimanne (EE)
+3. 22/ENG/120 - P.M.T. Kehara (EE)
+4. 22/ENG/050 - H.M.R.V.Herath(CO)
+5. 22/ENG/123 - P. Nithurjithan (EE)
+
 ## Overview
 
 This Calendar Management System is a console-based application written in C++. It allows users to manage their schedules by adding, viewing, and managing events and meetings. The application supports viewing schedules on a daily, weekly, and monthly basis, adding new events or meetings, showing details of scheduled meetings, adding day-offs, and managing meeting settings.
