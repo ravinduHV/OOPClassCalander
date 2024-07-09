@@ -75,4 +75,5 @@ To compile and run the application, use a C++ compiler that supports C++11 or la
 g++ main.cpp event.cpp event.h day.cpp day.h month.h month.cpp  -o CalendarManagementSystem
 ./CalendarManagementSystem
 ```
+![UML diagram](https://github.com/ravinduHV/OOPClassCalendar/assets/75525974/5265f99e-b039-4e91-b3f2-841cc04ce797)
 
