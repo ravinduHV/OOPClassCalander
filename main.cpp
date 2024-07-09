@@ -131,7 +131,6 @@ int menu_3() {
 
     while(true){
         date = choose_date(false);
-        cout << date << " " << now_tm.tm_mday << " " << currentMonth->maxDays() << endl;
         if (date < now_tm.tm_mday || date > currentMonth->maxDays())
             cout<<"Entered date is invalid,please try again : ";
         else
