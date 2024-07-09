@@ -129,7 +129,15 @@ int menu_3() {
     cin.ignore();   
     getline(cin, Title);
 
-    date = choose_date(false);
+    while(true){
+        date = choose_date(false);
+        cout << date << " " << now_tm.tm_mday << " " << currentMonth->maxDays() << endl;
+        if (date < now_tm.tm_mday || date > currentMonth->maxDays())
+            cout<<"Entered date is invalid,please try again : ";
+        else
+            break;
+    }
+    
 
     newDy = {0, 0, 0, date, temp_tm.tm_mon, temp_tm.tm_year};
     time_t new_day = mktime(&newDy);
