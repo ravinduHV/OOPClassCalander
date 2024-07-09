@@ -12,7 +12,9 @@ month::month(time_t _month)
 {
     month_ = _month;
     month_tm = *localtime(&month_);
-    cout << "Month created: " << asctime(&month_tm);
+    char tmp[50];
+    strftime(tmp, 50, "%B %Y", &month_tm);
+    cout << "Month : " << tmp << endl;
 }
 
 void month::show_monthlySchedule()
